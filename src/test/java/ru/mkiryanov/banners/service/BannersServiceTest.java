@@ -19,14 +19,14 @@ public class BannersServiceTest {
     public void setUp() {
         bannersService = new BannersService();
         bannersService.init();
-        bannersService.register(new Object[] {"A", "B", "C"}, new int[] {1, 3, 8});
+        bannersService.register("header", new Object[] {"A", "B", "C"}, new int[] {1, 3, 8});
     }
 
     @Test
     public void expectBannerCShouldAppearMoreOften() {
         Map<Object, Integer> appears = new HashMap<>();
         for (int i = 0; i < 1_000_000; i++) {
-            Object randomBanner = bannersService.getRandomBanner();
+            Object randomBanner = bannersService.getRandomBanner("header");
             appears.merge(randomBanner, 1, Integer::sum);
         }
 

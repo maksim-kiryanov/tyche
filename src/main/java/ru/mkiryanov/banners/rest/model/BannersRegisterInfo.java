@@ -1,13 +1,22 @@
-package ru.mkiryanov.banners.model;
+package ru.mkiryanov.banners.rest.model;
 
 /**
  * @author maksim-kiryanov
  */
-public class RegisterInfo {
+public class BannersRegisterInfo {
+    private String type;
     private Object[] banners;
     private int[] weights;
 
-    public RegisterInfo() {
+    public BannersRegisterInfo() {
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public Object[] getBanners() {

@@ -1,48 +1,61 @@
 package ru.mkiryanov.banners.service;
 
 import org.springframework.stereotype.Service;
+import ru.mkiryanov.banners.service.model.BannersInfo;
 
 import javax.annotation.PostConstruct;
-import java.util.Random;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
+
+import static ru.mkiryanov.banners.service.model.BannersInfo.newBannersInfo;
 
 /**
  * @author maksim-kiryanov
  */
 @Service
 public class BannersService {
-    private Object[] banners;
-    private int[] weights;
-    private int weightSum;
-    private Random random;
+    private Map<String, BannersInfo> bannerInfos;
 
     @PostConstruct
     public void init() {
-        random = new Random();
+        bannerInfos = new ConcurrentHashMap<>();
     }
 
-    public void register(Object[] banners, int[] weights) {
-        this.banners = banners;
-        this.weights = weights;
-
-        weightSum = 0;
-        for (int i = 0; i < weights.length; i++) {
-            weightSum += weights[i];
+    public void register(String type, Object[] banners, int[] weights) {
+        if (type == null || type.isEmpty()) {
+            throw new IllegalArgumentException("Type should be not empty string");
         }
+
+        if (banners == null || banners.length == 0) {
+            throw new IllegalArgumentException("Banners should be not empty");
+        }
+
+        if (weights == null || weights.length == 0) {
+            throw new IllegalArgumentException("Weights should be not empty");
+        }
+
+        if (banners.length != weights.length) {
+            throw new IllegalArgumentException("Weights should be correspond to banners");
+        }
+
+        bannerInfos.put(type, newBannersInfo(banners, weights));
     }
 
-    public Object getRandomBanner() {
-        if (banners == null || weights == null) {
-            return -1;
+    public Object getRandomBanner(String type) {
+        BannersInfo bannersInfo = bannerInfos.get(type);
+        if (bannersInfo == null) {
+            throw new IllegalStateException(String.format("Not found banners for type '%s'", type));
         }
 
-        int n = random.nextInt(weightSum) + 1;
+        int n = ThreadLocalRandom.current().nextInt(bannersInfo.getWeightSum()) + 1;
 
         int i = 0;
-        for (; i < weights.length; i++) {
-            n -= weights[i];
+        for (; i < bannersInfo.getWeightSize(); i++) {
+            n -= bannersInfo.getWeight(i);
             if (n <= 0) break;
         }
 
-        return banners[i];
+        return bannersInfo.getBanner(i);
     }
 }

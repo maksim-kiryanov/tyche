@@ -3,7 +3,7 @@ package ru.mkiryanov.banners;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import ru.mkiryanov.banners.controller.BannersRestController;
+import ru.mkiryanov.banners.rest.BannersRestController;
 
 /**
  * @author maksim-kiryanov
